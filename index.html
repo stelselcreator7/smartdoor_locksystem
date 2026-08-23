@@ -1,0 +1,2901 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="default">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Door Lock System Berbasis Face Recognition</title>
+    <!-- Google Fonts, Font Awesome, & Chart.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&family=Space+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ==================== 1. COLOR THEMES DEFINITION ==================== */
+        :root[data-theme="default"] {
+            --bg-body: #070a12;
+            --bg-body-gradient: radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 40%);
+            --bg-card: rgba(18, 24, 38, 0.85);
+            --bg-card-inner: rgba(10, 15, 26, 0.95);
+            --border-glow: rgba(59, 130, 246, 0.22);
+            --border-subtle: rgba(255, 255, 255, 0.09);
+            --card-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+            --header-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #8e9db5;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.35);
+            --cyan: #06b6d4;
+            --cyan-glow: rgba(6, 182, 212, 0.35);
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.3);
+            --danger: #f43f5e;
+            --danger-glow: rgba(244, 63, 94, 0.3);
+            --warning: #f59e0b;
+            --warning-glow: rgba(245, 158, 11, 0.3);
+            --logo-bg: rgba(255, 255, 255, 0.03);
+            --webcam-bg: #020617;
+            --webcam-grid: rgba(6, 182, 212, 0.06);
+            --header-title-grad: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%);
+        }
+
+        :root[data-theme="light"] {
+            --bg-body: #f8fafc;
+            --bg-body-gradient: radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.06) 0%, transparent 45%),
+                                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 45%),
+                                linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            --bg-card: #ffffff;
+            --bg-card-inner: #f1f5f9;
+            --border-glow: rgba(37, 99, 235, 0.2);
+            --border-subtle: #e2e8f0;
+            --card-shadow: 0 10px 25px -3px rgba(15, 23, 42, 0.06), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+            --header-shadow: 0 14px 30px -4px rgba(15, 23, 42, 0.08);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-glow: rgba(37, 99, 235, 0.15);
+            --cyan: #0284c7;
+            --cyan-glow: rgba(2, 132, 199, 0.18);
+            --success: #059669;
+            --success-glow: rgba(5, 150, 105, 0.15);
+            --danger: #e11d48;
+            --danger-glow: rgba(225, 29, 72, 0.15);
+            --warning: #d97706;
+            --warning-glow: rgba(217, 119, 6, 0.15);
+            --logo-bg: #ffffff;
+            --webcam-bg: #e2e8f0;
+            --webcam-grid: rgba(2, 132, 199, 0.08);
+            --header-title-grad: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0284c7 100%);
+        }
+
+        :root[data-theme="black"] {
+            --bg-body: #000000;
+            --bg-body-gradient: none;
+            --bg-card: #0d0d0d;
+            --bg-card-inner: #141414;
+            --border-glow: #2a2a2a;
+            --border-subtle: #222222;
+            --card-shadow: 0 12px 32px rgba(0, 0, 0, 0.9);
+            --header-shadow: 0 16px 40px rgba(0, 0, 0, 0.95);
+            --text-main: #ffffff;
+            --text-muted: #999999;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.3);
+            --cyan: #00f0ff;
+            --cyan-glow: rgba(0, 240, 255, 0.3);
+            --success: #00e676;
+            --success-glow: rgba(0, 230, 118, 0.3);
+            --danger: #ff1744;
+            --danger-glow: rgba(255, 23, 68, 0.3);
+            --warning: #ffab00;
+            --warning-glow: rgba(255, 171, 0, 0.3);
+            --logo-bg: rgba(255, 255, 255, 0.03);
+            --webcam-bg: #050505;
+            --webcam-grid: rgba(0, 240, 255, 0.05);
+            --header-title-grad: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #00f0ff 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            background-image: var(--bg-body-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-size: 15px;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .tech-font { font-family: 'Space Grotesk', sans-serif; }
+        .cyber-font { font-family: 'Orbitron', sans-serif; }
+
+        #toastContainer {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            backdrop-filter: blur(14px);
+            padding: 14px 20px;
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 300px;
+            transform: translateX(120%);
+            transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .toast.show { transform: translateX(0); }
+        .toast-success { border-left: 5px solid var(--success); }
+        .toast-danger { border-left: 5px solid var(--danger); }
+        .toast-warning { border-left: 5px solid var(--warning); }
+
+        /* SCREEN LOGIN ADMIN */
+        #loginScreen {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(15, 23, 42, 0.95) 0%, var(--bg-body) 100%);
+            backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 24px;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: clamp(26px, 5vw, 40px);
+            width: 100%;
+            max-width: 450px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            position: relative;
+        }
+
+        .login-institution-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .login-logos-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .login-logo-box {
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+
+        .login-logo-box:hover {
+            transform: scale(1.08);
+        }
+
+        .login-logo-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .login-institution-text h3 {
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+
+        .login-institution-text p {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .security-badge-icon {
+            width: 62px;
+            height: 62px;
+            background: radial-gradient(circle, var(--cyan-glow) 0%, var(--primary-glow) 100%);
+            border: 1.5px solid var(--cyan);
+            color: var(--cyan);
+            font-size: 26px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            box-shadow: 0 0 20px var(--cyan-glow);
+            position: relative;
+        }
+
+        .security-badge-icon i.fa-lock {
+            font-size: 14px;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: var(--bg-card);
+            color: var(--success);
+            padding: 3px;
+            border-radius: 50%;
+            border: 1px solid var(--border-glow);
+        }
+
+        .security-status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-card-inner);
+            border: 1px solid var(--border-subtle);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--cyan);
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .login-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+        .login-subtitle-text { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .input-group label { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+
+        .input-field-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-field-wrap i.prefix-icon {
+            position: absolute;
+            left: 16px;
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .input-field-wrap input {
+            width: 100%;
+            background: var(--bg-card-inner);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 13px 46px 13px 46px;
+            border-radius: 14px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .input-field-wrap input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 14px var(--cyan-glow);
+        }
+
+        .toggle-password-btn {
+            position: absolute;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-password-btn:hover {
+            color: var(--cyan);
+        }
+
+        .login-error {
+            display: none;
+            color: var(--danger);
+            font-size: 13px;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+
+        /* MAIN APP CONTAINER */
+        #mainApp {
+            display: none;
+            padding: clamp(16px, 3vw, 32px);
+        }
+
+        .container {
+            max-width: 1380px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(18px, 2.5vw, 26px);
+        }
+
+        /* HEADER */
+        header {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            backdrop-filter: blur(16px);
+            padding: clamp(18px, 2.5vw, 26px) clamp(22px, 3vw, 34px);
+            min-height: 110px;
+            border-radius: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--header-shadow);
+            gap: 20px;
+            flex-wrap: wrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), var(--primary), transparent);
+            box-shadow: 0 0 16px var(--cyan);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .header-brand-icon {
+            width: 58px;
+            height: 58px;
+            background: radial-gradient(circle at 30% 30%, var(--cyan-glow) 0%, var(--primary-glow) 100%);
+            border: 1.5px solid var(--cyan);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyan);
+            font-size: 26px;
+            box-shadow: 0 0 20px var(--cyan-glow);
+            flex-shrink: 0;
+        }
+
+        .menu-toggle-btn {
+            background: var(--bg-card-inner);
+            border: 1px solid var(--border-subtle);
+            color: var(--cyan);
+            font-size: 22px;
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .menu-toggle-btn:hover {
+            background: var(--cyan);
+            color: #ffffff;
+            box-shadow: 0 0 18px var(--cyan-glow);
+        }
+
+        .header-titles-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        header h1 {
+            font-size: clamp(20px, 2.7vw, 25px);
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            background: var(--header-title-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.25;
+        }
+
+        .header-sub-tag {
+            font-size: 11px;
+            color: var(--cyan);
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-logos {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-logo-card {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+
+        .header-logo-card:hover {
+            transform: scale(1.08);
+            filter: drop-shadow(0 0 12px var(--cyan-glow));
+        }
+
+        .header-logo-card img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+        .sidebar {
+            position: fixed;
+            top: 0; left: -360px;
+            width: min(340px, 85vw);
+            height: 100vh;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-glow);
+            z-index: 999;
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 20px 0 50px rgba(0, 0, 0, 0.25);
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.active { left: 0; }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .sidebar-close-btn:hover { color: var(--danger); }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .sidebar-link:hover {
+            background: var(--bg-card-inner);
+            color: var(--text-main);
+        }
+
+        .sidebar-link.active {
+            background: var(--cyan-glow);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        .tab-content { display: none; flex-direction: column; gap: 24px; }
+        .tab-content.active { display: flex; }
+
+        .grid-top {
+            display: grid;
+            grid-template-columns: 1.4fr 0.85fr;
+            gap: 24px;
+        }
+
+        .grid-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 980px) {
+            .grid-top, .grid-two-col { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: clamp(22px, 3vw, 28px);
+            box-shadow: var(--card-shadow);
+            position: relative;
+        }
+
+        .card-header {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-stream {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        @media (max-width: 720px) {
+            .panel-stream { grid-template-columns: 1fr; }
+        }
+
+        .video-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: var(--webcam-bg);
+            background-image:
+                linear-gradient(var(--webcam-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--webcam-grid) 1px, transparent 1px);
+            background-size: 22px 22px;
+            border: 1px solid var(--border-glow);
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .camera-empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--text-muted);
+            z-index: 5;
+            text-align: center;
+            padding: 16px;
+        }
+
+        .camera-empty-state i {
+            font-size: 50px;
+            color: var(--cyan);
+            opacity: 0.75;
+        }
+
+        .camera-empty-state span {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .info-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .info-item {
+            background: var(--bg-card-inner);
+            padding: 13px 18px;
+            border-radius: 15px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .info-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; display: block; font-weight: 700; text-transform: uppercase; }
+        .info-value { font-size: 16px; font-weight: 800; color: var(--text-main); }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .badge-success { background: var(--success-glow); color: var(--success); border: 1px solid var(--success); }
+        .badge-danger { background: var(--danger-glow); color: var(--danger); border: 1px solid var(--danger); }
+        .badge-warning { background: var(--warning-glow); color: var(--warning); border: 1px solid var(--warning); }
+        .badge-cyan { background: var(--cyan-glow); color: var(--cyan); border: 1px solid var(--cyan); }
+
+        .status-indicators {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .status-card {
+            background: var(--bg-card-inner);
+            border: 1px solid var(--border-subtle);
+            padding: 14px 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .led-indicator {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .led-red { background: var(--danger); box-shadow: 0 0 10px var(--danger); }
+        .led-green { background: var(--success); box-shadow: 0 0 10px var(--success); }
+        .led-off { background: #94a3b8; }
+
+        .status-text h4 { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .status-text p { font-size: 15px; font-weight: 800; margin-top: 3px; color: var(--text-main); }
+
+        .relock-bar-container {
+            background: var(--bg-card-inner);
+            border: 1px solid var(--border-subtle);
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin-bottom: 18px;
+        }
+
+        .relock-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        :root[data-theme="default"] .progress-track,
+        :root[data-theme="black"] .progress-track {
+            background: #1e293b;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--success));
+            transition: width 0.1s linear;
+        }
+
+        .action-buttons { display: flex; flex-direction: column; gap: 10px; }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .btn-primary { background: linear-gradient(90deg, var(--primary), var(--cyan)); color: #ffffff; font-weight: 800; }
+        .btn-warning-btn { background: linear-gradient(90deg, #f59e0b, #d97706); color: #ffffff; font-weight: 800; }
+        .btn-danger { background: rgba(244, 63, 94, 0.12); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: white; }
+        .btn-secondary { background: var(--bg-card-inner); color: var(--text-main); border: 1px solid var(--border-subtle); }
+        .btn-download { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); padding: 9px 16px; font-size: 13px; }
+        .btn-download:hover { background: var(--success); color: #ffffff; }
+
+        .form-register { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+        .form-register input {
+            flex: 1;
+            min-width: 220px;
+            background: var(--bg-card-inner);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-register input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan-glow);
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .table-search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .table-search-box i {
+            position: absolute;
+            left: 14px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .table-search-box input {
+            background: var(--bg-card-inner);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 10px 14px 10px 40px;
+            border-radius: 12px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        /* SCROLLABLE TABLES DEFINITION */
+        .table-responsive {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 280px;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 14px;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card-inner);
+        }
+
+        .table-responsive-large {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 280px;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card-inner);
+        }
+
+        .table-responsive::-webkit-scrollbar,
+        .table-responsive-large::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track,
+        .table-responsive-large::-webkit-scrollbar-track {
+            background: var(--bg-card-inner);
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb,
+        .table-responsive-large::-webkit-scrollbar-thumb {
+            background: var(--border-glow);
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb:hover,
+        .table-responsive-large::-webkit-scrollbar-thumb:hover {
+            background: var(--cyan);
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 14px; white-space: nowrap; }
+
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--bg-card-inner);
+            color: var(--text-muted);
+            padding: 14px 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            border-bottom: 2px solid var(--border-glow);
+        }
+        td { padding: 14px 18px; border-bottom: 1px solid var(--border-subtle); color: var(--text-main); }
+
+        .card-table-large {
+            padding: 28px !important;
+            border-radius: 26px !important;
+        }
+
+        .card-table-large .card-header {
+            font-size: 16px !important;
+            font-weight: 800 !important;
+            margin-bottom: 22px !important;
+        }
+
+        .table-large {
+            font-size: 15px !important;
+        }
+
+        .table-large th {
+            font-size: 12px !important;
+            padding: 16px 20px !important;
+            letter-spacing: 0.8px;
+        }
+
+        .table-large td {
+            padding: 18px 20px !important;
+        }
+
+        .table-large .user-name-cell {
+            font-size: 16px !important;
+            font-weight: 800 !important;
+            color: var(--text-main);
+        }
+
+        .btn-large-del {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-large-del:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            backdrop-filter: blur(14px);
+            border-radius: 20px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .icon-blue { background: var(--cyan-glow); color: var(--cyan); border: 1px solid var(--cyan); }
+        .icon-red { background: var(--danger-glow); color: var(--danger); border: 1px solid var(--danger); }
+        .icon-orange { background: var(--warning-glow); color: var(--warning); border: 1px solid var(--warning); }
+
+        .stat-info h5 { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .stat-info p { font-size: 22px; font-weight: 800; margin-top: 4px; color: var(--text-main); }
+
+        .sync-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .sync-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--success-glow);
+            color: var(--success);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 800;
+            border: 1px solid var(--success);
+        }
+
+        /* NOTIFIKASI HISTORY LIST STYLES */
+        .notif-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .notif-item {
+            background: var(--bg-card-inner);
+            border: 1px solid var(--border-subtle);
+            padding: 16px 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        .notif-item:hover {
+            transform: translateX(4px);
+        }
+
+        .notif-item.notif-danger { border-left: 4px solid var(--danger); }
+        .notif-item.notif-success { border-left: 4px solid var(--success); }
+        .notif-item.notif-warning { border-left: 4px solid var(--warning); }
+        .notif-item.notif-info { border-left: 4px solid var(--primary); }
+
+        .notif-icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .notif-danger .notif-icon-circle { background: var(--danger-glow); color: var(--danger); }
+        .notif-success .notif-icon-circle { background: var(--success-glow); color: var(--success); }
+        .notif-warning .notif-icon-circle { background: var(--warning-glow); color: var(--warning); }
+        .notif-info .notif-icon-circle { background: var(--primary-glow); color: var(--primary); }
+
+        .notif-content {
+            flex: 1;
+        }
+
+        .notif-content h5 {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 3px;
+        }
+
+        .notif-content p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .notif-time {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--cyan);
+            margin-top: 6px;
+            display: inline-block;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 22px;
+        }
+
+        .theme-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .theme-card {
+            background: var(--bg-card-inner);
+            border: 2px solid var(--border-subtle);
+            padding: 16px 12px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-card:hover { transform: translateY(-2px); }
+        .theme-card.active { border-color: var(--cyan); box-shadow: 0 0 15px var(--cyan-glow); }
+
+        .theme-preview-dot {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .theme-card h6 { font-size: 13px; font-weight: 700; color: var(--text-main); }
+    </style>
+</head>
+<body>
+
+<div id="toastContainer"></div>
+
+<!-- ==================== 1. SCREEN LOGIN ADMIN ==================== -->
+<div id="loginScreen">
+    <div class="login-card">
+        <div class="login-institution-header">
+            <div class="login-logos-wrap">
+                <div class="login-logo-box" title="SMK Negeri 1 Nglegok">
+                    <img src="img/SMK.png" alt="Logo SMK" onerror="this.src='img/SMK.JPG'">
+                </div>
+                <div class="login-logo-box" title="Teknik Elektronika Industri">
+                    <img src="img/TEI.png" alt="Logo TEI" onerror="this.src='img/TEI.JPG'">
+                </div>
+            </div>
+            <div class="login-institution-text">
+                <h3>SMK NEGERI 1 NGLEGOK</h3>
+                <p>TEKNIK ELEKTRONIKA INDUSTRI</p>
+            </div>
+        </div>
+
+        <div class="security-badge-icon" title="Sistem Keamanan Terenkripsi">
+            <i class="fa-solid fa-shield-halved"></i>
+            <i class="fa-solid fa-lock"></i>
+        </div>
+        <div class="security-status-chip">
+            <div class="live-dot" style="background: var(--success); width: 6px; height: 6px;"></div>
+            <span>ACCESS CONTROL ENCRYPTED</span>
+        </div>
+
+        <h2 class="tech-font" data-i18n="loginTitle">Smart Gate Access</h2>
+        <p class="login-subtitle-text" data-i18n="loginSubtitle">Autentikasi Administrator Portal Keamanan IoT</p>
+
+        <form id="formLogin" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label data-i18n="adminIdLabel">Admin ID</label>
+                <div class="input-field-wrap">
+                    <i class="fa-solid fa-fingerprint prefix-icon"></i>
+                    <input type="text" id="loginUser" data-i18n-placeholder="userPlaceholder" placeholder="Masukkan Username" required autocomplete="off" />
+                </div>
+            </div>
+            <div class="input-group">
+                <label data-i18n="securityKeyLabel">Security Key</label>
+                <div class="input-field-wrap">
+                    <i class="fa-solid fa-key prefix-icon"></i>
+                    <input type="password" id="loginPass" data-i18n-placeholder="passPlaceholder" placeholder="Masukkan Password" required />
+                    <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('loginPass', 'eyeIcon')" title="Lihat/Sembunyikan Password">
+                        <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="loginErrorMsg" class="login-error">
+                <i class="fa-solid fa-circle-exclamation"></i> <span data-i18n="loginError">Kredensial tidak valid!</span>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 12px;">
+                <i class="fa-solid fa-unlock-keyhole"></i> <span data-i18n="verifyButton">Verifikasi & Masuk</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== 2. MAIN DASHBOARD ==================== -->
+<div id="mainApp">
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR NAVIGASI -->
+    <div class="sidebar" id="sidebarMenu">
+        <div>
+            <div class="sidebar-header">
+                <h2><i class="fa-solid fa-microchip" style="color: var(--cyan);"></i> Cyber Lock Gate</h2>
+                <button class="sidebar-close-btn" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="sidebar-nav">
+                <div class="sidebar-link active" onclick="switchTab('tab-dashboard', this)">
+                    <i class="fa-solid fa-chart-pie"></i> <span data-i18n="navMonitoring">Monitoring & Telemetri</span>
+                </div>
+                <div class="sidebar-link" onclick="switchTab('tab-users', this)">
+                    <i class="fa-solid fa-users-gear"></i> <span data-i18n="navUsers">Izin Tamu & Pengguna</span>
+                </div>
+                <div class="sidebar-link" onclick="switchTab('tab-notifications', this)">
+                    <i class="fa-solid fa-bell"></i> <span data-i18n="navNotifications">Riwayat Notifikasi</span>
+                </div>
+                <div class="sidebar-link" onclick="switchTab('tab-settings', this)">
+                    <i class="fa-solid fa-gears"></i> <span data-i18n="navSettings">Pengaturan Sistem</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 18px;">
+            <button class="btn btn-danger" style="width: 100%;" onclick="handleLogout()">
+                <i class="fa-solid fa-power-off"></i> <span data-i18n="logoutButton">Keluar Sesi Admin</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- HEADER DASHBOARD -->
+        <header>
+            <div class="header-left">
+                <button class="menu-toggle-btn" onclick="toggleSidebar()" title="Buka Menu">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+                <div class="header-brand-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="header-titles-wrap">
+                    <h1 id="headerTitle" class="cyber-font" data-i18n="mainHeaderTitle">Smart Door Lock System Berbasis Face Recognition</h1>
+                    <div class="header-sub-tag">
+                        <i class="fa-solid fa-bolt-lightning"></i>
+                        <span>TEKNIK ELEKTRONIKA INDUSTRI • SMK NEGERI 1 NGLEGOK</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-logos">
+                    <!-- LOGO SMK -->
+                    <div class="header-logo-card" title="SMK Negeri 1 Nglegok">
+                        <img src="img/SMK.png" alt="Logo SMK" onerror="this.src='img/SMK.JPG'">
+                    </div>
+                    <!-- LOGO TEI -->
+                    <div class="header-logo-card" title="Teknik Elektronika Industri">
+                        <img src="img/TEI.png" alt="Logo TEI" onerror="this.src='img/TEI.JPG'">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ==================== MENU 1: MONITORING & ANALYTICS ==================== -->
+        <div id="tab-dashboard" class="tab-content active">
+
+            <div class="grid-top">
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-camera"></i> <span data-i18n="panel1Title">Panel 1: Live Stream Webcam</span></span>
+                    </div>
+                    <div class="panel-stream">
+                        <div class="video-box" id="webcamContainer">
+                            <div class="camera-empty-state">
+                                <i class="fa-solid fa-video"></i>
+                                <span class="mono" data-i18n="cameraPlaceholderText">AREA LIVE STREAM WEBCAM</span>
+                            </div>
+                        </div>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span class="info-label" data-i18n="verifiedIdentityLabel">Identitas Terverifikasi</span>
+                                <span class="info-value" id="dispNama">BUDI PRASETYO</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label" data-i18n="authStatusLabel">Status Otorisasi</span>
+                                <span class="badge badge-success" id="dispStatus"><i class="fa-solid fa-circle-check"></i> <span data-i18n="accessGranted">ACCESS GRANTED</span></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label" data-i18n="confidenceLabel">Confidence (Kecocokan Wajah)</span>
+                                <span class="info-value mono" id="dispConfidence" style="color: var(--cyan);"><i class="fa-solid fa-bullseye"></i> 42.3%</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label" data-i18n="timestampLabel">Timestamp Presensi</span>
+                                <span class="info-value mono" id="dispWaktu">02:10:00 WIB</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-sliders"></i> <span data-i18n="panel2Title">Panel 2: Actuator & Lock Control</span></span>
+                    </div>
+
+                    <div class="status-indicators">
+                        <div class="status-card">
+                            <div class="led-indicator led-red" id="ledDoor"></div>
+                            <div class="status-text">
+                                <h4 data-i18n="physicalStatusLabel">Status Fisik</h4>
+                                <p id="txtDoorStatus" style="color: var(--danger);" data-i18n="lockedStatus">TERKUNCI</p>
+                            </div>
+                        </div>
+                        <div class="status-card">
+                            <div class="led-indicator led-off" id="ledAlarm"></div>
+                            <div class="status-text">
+                                <h4 data-i18n="alarmSirenLabel">Sirene Alarm</h4>
+                                <p id="txtAlarmStatus" data-i18n="alarmNormal">NORMAL</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relock-bar-container">
+                        <div class="relock-header">
+                            <span data-i18n="autoRelockTitle">Auto-Relock Countdown</span>
+                            <span id="txtRelockTimer" class="mono" data-i18n="standbyLocked">STANDBY (LOCKED)</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progressRelock"></div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="bukaPintuTimed(5)">
+                            <i class="fa-solid fa-lock-open"></i> <span data-i18n="unlockDoorBtn">Buka Kunci Pintu (5 Detik)</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="kunciPintuInstan()">
+                            <i class="fa-solid fa-lock"></i> <span data-i18n="instantLockBtn">Kunci Instan (Force Lock)</span>
+                        </button>
+                        <button class="btn btn-danger" onclick="kontrolAlarm('off')">
+                            <i class="fa-solid fa-bell-slash"></i> <span data-i18n="resetAlarmBtn">Reset Alarm Buzzer</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRAFIK 24 JAM PENUH DENGAN SKALA Y KUNCI (0 - 10) -->
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-chart-line"></i> <span data-i18n="chartTitle">Grafik Frekuensi Akses Hari Ini (24 Jam)</span></span>
+                    <span class="mono" style="font-size: 12px; color: var(--cyan);" data-i18n="liveStreamTag">24-Hour Timeline Stream</span>
+                </div>
+                <div style="height: 250px; width: 100%;">
+                    <canvas id="accessChart"></canvas>
+                </div>
+            </div>
+
+            <!-- PANEL 3: TABEL LOG RIWAYAT (DATA DIURUT DARI 02:00 HINGGA 22:00, DATA BARU MASUK DARI BAWAH) -->
+            <div class="card">
+                <div class="table-toolbar">
+                    <div class="card-header" style="margin-bottom: 0;">
+                        <span><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="panel3Title">Panel 3: Log Riwayat Aktivitas & Audit</span></span>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <div class="table-search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="inputSearchLog" data-i18n-placeholder="searchPlaceholder" placeholder="Cari rekaman nama..." onkeyup="filterLogTable()" />
+                        </div>
+                        <button class="btn btn-download" onclick="downloadCSV()">
+                            <i class="fa-solid fa-file-arrow-down"></i> <span data-i18n="downloadCsvBtn">Unduh CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive" id="logTableContainer">
+                    <table id="logTable">
+                        <thead>
+                            <tr>
+                                <th data-i18n="thNo">No</th>
+                                <th data-i18n="thTimestamp">Timestamp</th>
+                                <th data-i18n="thSubject">Nama Subjek</th>
+                                <th data-i18n="thStatus">Status Akses</th>
+                                <th data-i18n="thConfidence">Confidence</th>
+                                <th data-i18n="thNotes">Keterangan Keamanan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logBody">
+                            <tr>
+                                <td>1</td>
+                                <td class="mono">02:10:00 WIB</td>
+                                <td><strong>UNKNOWN</strong></td>
+                                <td><span class="badge badge-danger" data-i18n="badgeDenied">DENIED</span></td>
+                                <td class="mono">91.3%</td>
+                                <td data-i18n-log="unknown">Wajah Asing / Ilegal</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td class="mono">06:45:10 WIB</td>
+                                <td><strong>Rian Hidayat</strong></td>
+                                <td><span class="badge badge-success" data-i18n="badgeGranted">GRANTED</span></td>
+                                <td class="mono">37.8%</td>
+                                <td data-i18n-log="registered">Wajah Terdaftar di Model</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td class="mono">08:00:20 WIB</td>
+                                <td><strong>Dewi Lestari</strong></td>
+                                <td><span class="badge badge-success" data-i18n="badgeGranted">GRANTED</span></td>
+                                <td class="mono">40.5%</td>
+                                <td data-i18n-log="registered">Wajah Terdaftar di Model</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td class="mono">10:20:15 WIB</td>
+                                <td><strong>Teknisi Listrik</strong></td>
+                                <td><span class="badge badge-warning" data-i18n="badgeGuestAccess">GUEST ACCESS</span></td>
+                                <td class="mono">-</td>
+                                <td data-i18n-log="guest">Otorisasi Tamu 5s</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td class="mono">11:45:30 WIB</td>
+                                <td><strong>Ibu Maya (Tamu)</strong></td>
+                                <td><span class="badge badge-warning" data-i18n="badgeGuestAccess">GUEST ACCESS</span></td>
+                                <td class="mono">-</td>
+                                <td data-i18n-log="guest">Otorisasi Tamu 5s</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td class="mono">13:10:04 WIB</td>
+                                <td><strong>Pak Hendra (Kurir)</strong></td>
+                                <td><span class="badge badge-warning" data-i18n="badgeGuestAccess">GUEST ACCESS</span></td>
+                                <td class="mono">-</td>
+                                <td data-i18n-log="guest">Otorisasi Tamu 5s</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td class="mono">13:58:40 WIB</td>
+                                <td><strong>UNKNOWN</strong></td>
+                                <td><span class="badge badge-danger" data-i18n="badgeDenied">DENIED</span></td>
+                                <td class="mono">82.4%</td>
+                                <td data-i18n-log="unknown">Wajah Asing / Ilegal</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td class="mono">14:15:22 WIB</td>
+                                <td><strong>Ahmad Fauzi</strong></td>
+                                <td><span class="badge badge-success" data-i18n="badgeGranted">GRANTED</span></td>
+                                <td class="mono">45.0%</td>
+                                <td data-i18n-log="registered">Wajah Terdaftar di Model</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td class="mono">14:20:01 WIB</td>
+                                <td><strong>Siti Rahma</strong></td>
+                                <td><span class="badge badge-success" data-i18n="badgeGranted">GRANTED</span></td>
+                                <td class="mono">38.1%</td>
+                                <td data-i18n-log="registered">Wajah Terdaftar di Model</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td class="mono">14:28:10 WIB</td>
+                                <td><strong>UNKNOWN</strong></td>
+                                <td><span class="badge badge-danger" data-i18n="badgeDenied">DENIED</span></td>
+                                <td class="mono">78.9%</td>
+                                <td data-i18n-log="unknown">Wajah Asing / Ilegal</td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td class="mono">14:32:05 WIB</td>
+                                <td><strong>Budi Prasetyo</strong></td>
+                                <td><span class="badge badge-success" data-i18n="badgeGranted">GRANTED</span></td>
+                                <td class="mono">42.3%</td>
+                                <td data-i18n-log="registered">Wajah Terdaftar di Model</td>
+                            </tr>
+                            <tr>
+                                <td>12</td>
+                                <td class="mono">16:50:20 WIB</td>
+                                <td><strong>Pak Joko (Tamu)</strong></td>
+                                <td><span class="badge badge-warning" data-i18n="badgeGuestAccess">GUEST ACCESS</span></td>
+                                <td class="mono">-</td>
+                                <td data-i18n-log="guest">Otorisasi Tamu 5s</td>
+                            </tr>
+                            <tr>
+                                <td>13</td>
+                                <td class="mono">18:40:55 WIB</td>
+                                <td><strong>Nabila Putri</strong></td>
+                                <td><span class="badge badge-success" data-i18n="badgeGranted">GRANTED</span></td>
+                                <td class="mono">39.5%</td>
+                                <td data-i18n-log="registered">Wajah Terdaftar di Model</td>
+                            </tr>
+                            <tr>
+                                <td>14</td>
+                                <td class="mono">20:05:12 WIB</td>
+                                <td><strong>Eka Saputra</strong></td>
+                                <td><span class="badge badge-success" data-i18n="badgeGranted">GRANTED</span></td>
+                                <td class="mono">41.0%</td>
+                                <td data-i18n-log="registered">Wajah Terdaftar di Model</td>
+                            </tr>
+                            <tr>
+                                <td>15</td>
+                                <td class="mono">22:15:30 WIB</td>
+                                <td><strong>UNKNOWN</strong></td>
+                                <td><span class="badge badge-danger" data-i18n="badgeDenied">DENIED</span></td>
+                                <td class="mono">84.2%</td>
+                                <td data-i18n-log="unknown">Wajah Asing / Ilegal</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- STATISTIK RINGKAS -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon icon-blue"><i class="fa-solid fa-users-viewfinder"></i></div>
+                    <div class="stat-info">
+                        <h5 data-i18n="statFaceSuccess">Akses Face ID Sukses</h5>
+                        <p class="mono"><span id="statTotalFaceIDNum">7</span> <span id="statUnitPeople" data-i18n="unitPeople">Orang</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-red"><i class="fa-solid fa-user-xmark"></i></div>
+                    <div class="stat-info">
+                        <h5 data-i18n="statDenied">Akses Ditolak Ilegal</h5>
+                        <p class="mono"><span id="statTotalDitolakNum">4</span> <span id="statUnitTimes1" data-i18n="unitTimes">Kali</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-orange"><i class="fa-solid fa-hand-pointer"></i></div>
+                    <div class="stat-info">
+                        <h5 data-i18n="statManual">Total Izin Masuk Manual</h5>
+                        <p class="mono"><span id="statTotalManualNum">4</span> <span id="statUnitTimes2" data-i18n="unitTimes">Kali</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sync-bar">
+                <div class="sync-left">
+                    <i class="fa-solid fa-circle-nodes fa-spin" style="color: var(--cyan);"></i>
+                    <span data-i18n="iotNetworkLabel">Status Jaringan IoT:</span>
+                </div>
+                <div class="sync-badge">
+                    <div class="live-dot" style="background: var(--success);"></div>
+                    <span id="txtRealtimeStatus" class="mono">Terakhir Sinkron: Real-time (Aktif) (22:15:30 WIB)</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== MENU 2: IZIN TAMU & PENGGUNA ==================== -->
+        <div id="tab-users" class="tab-content">
+
+            <div class="card">
+                <div class="card-header" style="color: var(--warning);">
+                    <span><i class="fa-solid fa-user-plus"></i> <span data-i18n="guestFormTitle">Beri Izin Masuk Tamu / Orang Asing (Manual Authorization)</span></span>
+                </div>
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;" data-i18n="guestFormSubtitle">
+                    Daftarkan nama tamu untuk membuka kunci solenoid pintu secara otomatis selama 5 detik dan mencatat izin akses ke riwayat audit.
+                </p>
+                <div class="form-register">
+                    <input type="text" id="inputNamaTamu" data-i18n-placeholder="guestPlaceholder" placeholder="Ketik nama lengkap tamu..." />
+                    <button class="btn btn-warning-btn" onclick="beriIzinTamu()">
+                        <i class="fa-solid fa-door-open"></i> <span data-i18n="grantOpenBtn">Izinkan & Buka Pintu</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid-two-col">
+                <!-- TABEL 1: PENGGUNA TERDAFTAR -->
+                <div class="card card-table-large">
+                    <div class="card-header" style="color: var(--success);">
+                        <span><i class="fa-solid fa-user-check"></i> <span data-i18n="regUsersTitle">Pengguna Terdaftar</span></span>
+                    </div>
+                    <div class="table-responsive-large" id="userTableContainer">
+                        <table class="table-large">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="thNo">No</th>
+                                    <th data-i18n="thUser">Nama Pengguna</th>
+                                    <th data-i18n="thVector">Status Model</th>
+                                    <th style="text-align: right;" data-i18n="thAction">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userRegisteredBody">
+                                <tr>
+                                    <td><strong>1</strong></td>
+                                    <td class="user-name-cell">Budi Prasetyo</td>
+                                    <td><span class="badge badge-success" style="font-size: 12px; padding: 6px 12px;" data-i18n="activePickle">Aktif (Pickle)</span></td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusPengguna(this, 'Budi Prasetyo')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>2</strong></td>
+                                    <td class="user-name-cell">Siti Rahma</td>
+                                    <td><span class="badge badge-success" style="font-size: 12px; padding: 6px 12px;" data-i18n="activePickle">Aktif (Pickle)</span></td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusPengguna(this, 'Siti Rahma')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>3</strong></td>
+                                    <td class="user-name-cell">Ahmad Fauzi</td>
+                                    <td><span class="badge badge-success" style="font-size: 12px; padding: 6px 12px;" data-i18n="activePickle">Aktif (Pickle)</span></td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusPengguna(this, 'Ahmad Fauzi')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>4</strong></td>
+                                    <td class="user-name-cell">Dewi Lestari</td>
+                                    <td><span class="badge badge-success" style="font-size: 12px; padding: 6px 12px;" data-i18n="activePickle">Aktif (Pickle)</span></td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusPengguna(this, 'Dewi Lestari')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>5</strong></td>
+                                    <td class="user-name-cell">Rian Hidayat</td>
+                                    <td><span class="badge badge-success" style="font-size: 12px; padding: 6px 12px;" data-i18n="activePickle">Aktif (Pickle)</span></td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusPengguna(this, 'Rian Hidayat')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>6</strong></td>
+                                    <td class="user-name-cell">Eka Saputra</td>
+                                    <td><span class="badge badge-success" style="font-size: 12px; padding: 6px 12px;" data-i18n="activePickle">Aktif (Pickle)</span></td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusPengguna(this, 'Eka Saputra')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>7</strong></td>
+                                    <td class="user-name-cell">Nabila Putri</td>
+                                    <td><span class="badge badge-success" style="font-size: 12px; padding: 6px 12px;" data-i18n="activePickle">Aktif (Pickle)</span></td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusPengguna(this, 'Nabila Putri')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TABEL 2: TAMU DIIZINKAN (DATA BARU MASUK DARI BAWAH) -->
+                <div class="card card-table-large">
+                    <div class="card-header" style="color: var(--warning);">
+                        <span><i class="fa-solid fa-id-card"></i> <span data-i18n="authGuestTitle">Daftar Tamu Diizinkan</span></span>
+                    </div>
+                    <div class="table-responsive-large" id="guestTableContainer">
+                        <table class="table-large">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="thNo">No</th>
+                                    <th data-i18n="thGuest">Nama Tamu</th>
+                                    <th data-i18n="thAuthTime">Waktu Otorisasi</th>
+                                    <th style="text-align: right;" data-i18n="thAction">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="guestAuthorizedBody">
+                                <tr>
+                                    <td><strong>1</strong></td>
+                                    <td class="user-name-cell">Pak Hendra (Kurir)</td>
+                                    <td class="mono" style="font-size: 14px;">13:10:04 WIB</td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusTamu(this, 'Pak Hendra (Kurir)')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>2</strong></td>
+                                    <td class="user-name-cell">Ibu Maya (Tamu)</td>
+                                    <td class="mono" style="font-size: 14px;">11:45:30 WIB</td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusTamu(this, 'Ibu Maya (Tamu)')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>3</strong></td>
+                                    <td class="user-name-cell">Teknisi Listrik (PLN)</td>
+                                    <td class="mono" style="font-size: 14px;">10:20:15 WIB</td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusTamu(this, 'Teknisi Listrik (PLN)')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>4</strong></td>
+                                    <td class="user-name-cell">Bambang (Vendor)</td>
+                                    <td class="mono" style="font-size: 14px;">09:12:44 WIB</td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusTamu(this, 'Bambang (Vendor)')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>5</strong></td>
+                                    <td class="user-name-cell">Petugas Kebersihan</td>
+                                    <td class="mono" style="font-size: 14px;">08:00:20 WIB</td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusTamu(this, 'Petugas Kebersihan')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>6</strong></td>
+                                    <td class="user-name-cell">Pak Joko (Tamu Orang Tua)</td>
+                                    <td class="mono" style="font-size: 14px;">07:45:00 WIB</td>
+                                    <td style="text-align: right;"><button class="btn-large-del" onclick="hapusTamu(this, 'Pak Joko (Tamu Orang Tua)')"><i class="fa-solid fa-trash"></i> <span data-i18n="deleteBtn">Hapus</span></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== MENU 3: RIWAYAT NOTIFIKASI ==================== -->
+        <div id="tab-notifications" class="tab-content">
+            <div class="card">
+                <div class="table-toolbar">
+                    <div class="card-header" style="margin-bottom: 0;">
+                        <span><i class="fa-solid fa-bell"></i> <span data-i18n="notifHistoryTitle">Log Riwayat Notifikasi & Peringatan Keamanan</span></span>
+                    </div>
+                    <button class="btn btn-danger" style="padding: 8px 16px; font-size: 12px;" onclick="clearNotifHistory()">
+                        <i class="fa-solid fa-trash-can"></i> <span data-i18n="clearNotifBtn">Hapus Riwayat Notifikasi</span>
+                    </button>
+                </div>
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;" data-i18n="notifHistorySub">
+                    Daftar seluruh pesan peringatan, ancaman wajah asing, dan riwayat aktivitas kontrol sistem IoT.
+                </p>
+                <div class="notif-list-container" id="notifListWrap">
+                    <div class="notif-item notif-danger">
+                        <div class="notif-icon-circle"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="notif-content">
+                            <h5>Akses Ilegal Terdeteksi (UNKNOWN)</h5>
+                            <p>Seseorang dengan wajah tidak dikenal mencoba membuka pintu gerbang utama.</p>
+                            <span class="notif-time mono">22:15:30 WIB • Gerbang Depan</span>
+                        </div>
+                    </div>
+                    <div class="notif-item notif-success">
+                        <div class="notif-icon-circle"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="notif-content">
+                            <h5>Akses Masuk Terverifikasi (Eka Saputra)</h5>
+                            <p>Face ID mengenali subjek terdaftar dengan tingkat kecocokan 41.0%.</p>
+                            <span class="notif-time mono">20:05:12 WIB • Solenoid Terbuka</span>
+                        </div>
+                    </div>
+                    <div class="notif-item notif-success">
+                        <div class="notif-icon-circle"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="notif-content">
+                            <h5>Akses Masuk Terverifikasi (Nabila Putri)</h5>
+                            <p>Face ID mengenali subjek terdaftar dengan tingkat kecocokan 39.5%.</p>
+                            <span class="notif-time mono">18:40:55 WIB • Solenoid Terbuka</span>
+                        </div>
+                    </div>
+                    <div class="notif-item notif-warning">
+                        <div class="notif-icon-circle"><i class="fa-solid fa-door-open"></i></div>
+                        <div class="notif-content">
+                            <h5>Otorisasi Masuk Tamu (Pak Hendra)</h5>
+                            <p>Admin memberikan izin buka pintu manual via dashboard web selama 5 detik.</p>
+                            <span class="notif-time mono">13:10:04 WIB • Override Manual</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MENU 4: PENGATURAN SISTEM ==================== -->
+        <div id="tab-settings" class="tab-content">
+
+            <div class="settings-grid">
+                
+                <!-- WIDGET INFORMASI JAM & TANGGAL REALTIME DUNIA NYATA -->
+                <div class="card" style="grid-column: 1 / -1;">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-clock"></i> <span data-i18n="timeSettingTitle">Waktu & Kalender Sistem (Real-Time World Clock)</span></span>
+                        <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> NTP Synchronized</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
+                        <div style="background: var(--bg-card-inner); padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border-subtle);">
+                            <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" data-i18n="timeLabel">Waktu Saat Ini (Jam:Menit:Detik)</span>
+                            <div class="mono" id="dispRealTimeClock" style="font-size: 20px; font-weight: 900; color: var(--cyan); margin-top: 4px;">--:--:-- WIB</div>
+                        </div>
+                        <div style="background: var(--bg-card-inner); padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border-subtle);">
+                            <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" data-i18n="dayLabel">Hari</span>
+                            <div style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 4px;" id="dispRealDay">--</div>
+                        </div>
+                        <div style="background: var(--bg-card-inner); padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border-subtle);">
+                            <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" data-i18n="dateLabel">Tanggal & Bulan</span>
+                            <div style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 4px;" id="dispRealDate">--</div>
+                        </div>
+                        <div style="background: var(--bg-card-inner); padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border-subtle);">
+                            <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" data-i18n="yearLabel">Tahun</span>
+                            <div class="mono" style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 4px;" id="dispRealYear">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GANTI USERNAME ADMIN -->
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-user-gear"></i> <span data-i18n="changeUserTitle">Ubah Username Admin</span></span>
+                    </div>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;" data-i18n="changeUserSub">
+                        Ganti ID username yang digunakan untuk login administrator.
+                    </p>
+                    <form onsubmit="handleUpdateUsername(event)" style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" id="inputNewUsername" data-i18n-placeholder="newUserPlaceholder" placeholder="Username Baru" required style="background: var(--bg-card-inner); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 12px 16px; border-radius: 12px; font-size: 13px;" />
+                        <input type="password" id="inputConfirmPassForUser" data-i18n-placeholder="currPassPlaceholder" placeholder="Konfirmasi Password Saat Ini" required style="background: var(--bg-card-inner); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 12px 16px; border-radius: 12px; font-size: 13px;" />
+                        <button type="submit" class="btn btn-primary" style="padding: 10px 14px; font-size: 13px;">
+                            <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="saveUserBtn">Simpan Username Baru</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- GANTI PASSWORD VERIFIKASI 2 LANGKAH -->
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-shield-halved"></i> <span data-i18n="changePass2FATitle">Ganti Password (Verifikasi 2 Langkah)</span></span>
+                    </div>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;" data-i18n="changePass2FASub">
+                        Langkah 1: Masukkan password & kode OTP. Langkah 2: Konfirmasi ganti password baru.
+                    </p>
+                    
+                    <!-- STEP 1 -->
+                    <div id="section2FAStep1" style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="password" id="inputCurrentPass2FA" data-i18n-placeholder="currPassPlaceholder" placeholder="Password Lama Saat Ini" style="background: var(--bg-card-inner); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 12px 16px; border-radius: 12px; font-size: 13px;" />
+                        <button type="button" class="btn btn-warning-btn" onclick="request2FACode()" style="padding: 10px 14px; font-size: 13px;">
+                            <i class="fa-solid fa-key"></i> <span data-i18n="btnRequest2FA">Kirim Kode Verifikasi OTP</span>
+                        </button>
+                    </div>
+
+                    <!-- STEP 2 -->
+                    <form id="section2FAStep2" onsubmit="handleFinal2FAPasswordChange(event)" style="display: none; flex-direction: column; gap: 10px; margin-top: 10px;">
+                        <div style="background: rgba(6, 182, 212, 0.1); border: 1px dashed var(--cyan); padding: 10px; border-radius: 12px; font-size: 12px; color: var(--cyan); font-weight: 700;" id="boxOtpAlert">
+                            Kode OTP Keamanan telah dibuat.
+                        </div>
+                        <input type="text" id="input2FACode" class="mono" placeholder="Masukkan 6 Digit OTP" required maxlength="6" style="background: var(--bg-card-inner); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 12px 16px; border-radius: 12px; font-size: 14px; font-weight: 800; letter-spacing: 2px;" />
+                        <input type="password" id="inputNewPasswordFinal" data-i18n-placeholder="newPassPlaceholder" placeholder="Password Baru" required style="background: var(--bg-card-inner); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 12px 16px; border-radius: 12px; font-size: 13px;" />
+                        <input type="password" id="inputConfirmNewPasswordFinal" data-i18n-placeholder="confirmNewPassPlaceholder" placeholder="Ulangi Password Baru" required style="background: var(--bg-card-inner); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 12px 16px; border-radius: 12px; font-size: 13px;" />
+                        <button type="submit" class="btn btn-primary" style="padding: 10px 14px; font-size: 13px;">
+                            <i class="fa-solid fa-lock"></i> <span data-i18n="btnFinalizePass">Verifikasi & Terapkan Password</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-language"></i> <span data-i18n="langSettingTitle">Pilihan Bahasa Antarmuka</span></span>
+                    </div>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="langSettingSubtitle">
+                        Pilih bahasa tampilan untuk dashboard kontrol:
+                    </p>
+                    <div class="theme-selector-grid">
+                        <div class="theme-card active" id="langBtn-auto" onclick="setAppLanguage('auto')">
+                            <i class="fa-brands fa-chrome" style="font-size: 24px; margin-bottom: 10px; color: var(--cyan);"></i>
+                            <h6 data-i18n="langAuto">Default</h6>
+                            <span style="font-size: 11px; color: var(--text-muted);" data-i18n="langAutoSub">Browser</span>
+                        </div>
+                        <div class="theme-card" id="langBtn-en" onclick="setAppLanguage('en')">
+                            <i class="fa-solid fa-earth-americas" style="font-size: 24px; margin-bottom: 10px; color: var(--primary);"></i>
+                            <h6>English</h6>
+                            <span style="font-size: 11px; color: var(--text-muted);">EN-US</span>
+                        </div>
+                        <div class="theme-card" id="langBtn-id" onclick="setAppLanguage('id')">
+                            <i class="fa-solid fa-flag" style="font-size: 24px; margin-bottom: 10px; color: var(--danger);"></i>
+                            <h6>Indonesia</h6>
+                            <span style="font-size: 11px; color: var(--text-muted);">ID-ID</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-pen-to-square"></i> <span data-i18n="customTitleCard">Kustomisasi Nama Portal</span></span>
+                    </div>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="customTitleSub">
+                        Ubah judul portal dashboard yang tampil di bagian atas header.
+                    </p>
+                    <div class="form-register" style="flex-direction: column;">
+                        <input type="text" id="inputCustomTitle" data-i18n-placeholder="newTitlePlaceholder" placeholder="Masukkan judul baru..." />
+                        <button class="btn btn-primary" onclick="simpanNamaDashboard()">
+                            <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="saveTitleBtn">Terapkan & Simpan Judul</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-palette"></i> <span data-i18n="themeSettingTitle">Skema Warna & Tema Tampilan</span></span>
+                    </div>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="themeSettingSubtitle">
+                        Pilih tema visual yang sesuai dengan preferensi Anda:
+                    </p>
+                    <div class="theme-selector-grid">
+                        <div class="theme-card active" id="themeBtn-default" onclick="setAppTheme('default')">
+                            <div class="theme-preview-dot" style="background: #070a12; border-color: #06b6d4;"></div>
+                            <h6>Cyber Glass</h6>
+                            <span style="font-size: 11px; color: var(--text-muted);">Default</span>
+                        </div>
+
+                        <div class="theme-card" id="themeBtn-light" onclick="setAppTheme('light')">
+                            <div class="theme-preview-dot" style="background: #ffffff; border-color: #2563eb;"></div>
+                            <h6>Clean Light</h6>
+                            <span style="font-size: 11px; color: var(--text-muted);" data-i18n="themeWhite">Putih</span>
+                        </div>
+
+                        <div class="theme-card" id="themeBtn-black" onclick="setAppTheme('black')">
+                            <div class="theme-preview-dot" style="background: #000000; border-color: #333333;"></div>
+                            <h6>Pure AMOLED</h6>
+                            <span style="font-size: 11px; color: var(--text-muted);" data-i18n="themeBlack">Hitam</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fa-solid fa-display"></i> <span data-i18n="resSettingTitle">Adaptasi Resolusi Layar & LCD</span></span>
+                    </div>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="resSettingSubtitle">
+                        Status deteksi resolusi viewport perangkat (Smartphone, Tablet, PC Monitor, atau Layar TFT Raspberry Pi):
+                    </p>
+                    <div style="background: var(--bg-card-inner); padding: 16px; border-radius: 16px; border: 1px solid var(--border-subtle);">
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 10px;">
+                            <span data-i18n="currentViewportLabel">Dimensi Viewport Saat Ini:</span>
+                            <strong class="mono" id="dispViewportSize" style="color: var(--cyan);">1920 x 1080 px</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                            <span data-i18n="layoutSyncLabel">Status Sinkronisasi Layout:</span>
+                            <span class="badge badge-success"><i class="fa-solid fa-check"></i> <span data-i18n="autoScaledActive">Auto-Scaled Active</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    let countManual = 0;
+    let relockInterval = null;
+    let accessChartInstance = null;
+    let currentLang = 'id';
+    let generated2FACode = null;
+
+    let adminCredentials = {
+        username: localStorage.getItem('portalAdminUser') || "admin",
+        password: localStorage.getItem('portalAdminPass') || "admin123"
+    };
+
+    const i18n = {
+        id: {
+            loginTitle: "Smart Gate Access",
+            loginSubtitle: "Autentikasi Administrator Portal Keamanan IoT",
+            adminIdLabel: "Admin ID",
+            securityKeyLabel: "Security Key",
+            userPlaceholder: "Masukkan Username",
+            passPlaceholder: "Masukkan Password",
+            loginError: "Kredensial tidak valid!",
+            verifyButton: "Verifikasi & Masuk",
+            navMonitoring: "Monitoring & Telemetri",
+            navUsers: "Izin Tamu & Pengguna",
+            navNotifications: "Riwayat Notifikasi",
+            navSettings: "Pengaturan Sistem",
+            logoutButton: "Keluar Sesi Admin",
+            mainHeaderTitle: "Smart Door Lock System Berbasis Face Recognition",
+            panel1Title: "Panel 1: Live Stream Webcam",
+            cameraPlaceholderText: "AREA LIVE STREAM WEBCAM",
+            verifiedIdentityLabel: "Identitas Terverifikasi",
+            authStatusLabel: "Status Otorisasi",
+            accessGranted: "ACCESS GRANTED",
+            confidenceLabel: "Confidence (Kecocokan Wajah)",
+            timestampLabel: "Timestamp Presensi",
+            panel2Title: "Panel 2: Actuator & Lock Control",
+            physicalStatusLabel: "Status Fisik",
+            lockedStatus: "TERKUNCI",
+            unlockedStatus: "TERBUKA",
+            alarmSirenLabel: "Sirene Alarm",
+            alarmNormal: "NORMAL",
+            autoRelockTitle: "Auto-Relock Countdown",
+            standbyLocked: "STANDBY (LOCKED)",
+            autoLockIn: "AUTO-LOCK DALAM",
+            unlockDoorBtn: "Buka Kunci Pintu (5 Detik)",
+            instantLockBtn: "Kunci Instan (Force Lock)",
+            resetAlarmBtn: "Reset Alarm Buzzer",
+            chartTitle: "Grafik Frekuensi Akses Hari Ini (24 Jam)",
+            liveStreamTag: "24-Hour Timeline Stream",
+            panel3Title: "Panel 3: Log Riwayat Aktivitas & Audit",
+            searchPlaceholder: "Cari rekaman nama...",
+            downloadCsvBtn: "Unduh CSV",
+            thNo: "No",
+            thTimestamp: "Timestamp",
+            thSubject: "Nama Subjek",
+            thStatus: "Status Akses",
+            thConfidence: "Confidence",
+            thNotes: "Keterangan Keamanan",
+            thUser: "Nama Pengguna",
+            thVector: "Status Model",
+            thAction: "Aksi",
+            thGuest: "Nama Tamu",
+            thAuthTime: "Waktu Otorisasi",
+            statFaceSuccess: "Akses Face ID Sukses",
+            statDenied: "Akses Ditolak Ilegal",
+            statManual: "Total Izin Masuk Manual",
+            unitPeople: "Orang",
+            unitTimes: "Kali",
+            badgeGranted: "GRANTED",
+            badgeDenied: "DENIED",
+            badgeGuestAccess: "GUEST ACCESS",
+            badgeManualOpen: "MANUAL OPEN",
+            logRegistered: "Wajah Terdaftar di Model",
+            logUnknown: "Wajah Asing / Ilegal",
+            logGuestNote: "Otorisasi Tamu 5s",
+            logManualNote: "Buka Manual 5s",
+            iotNetworkLabel: "Status Jaringan IoT:",
+            syncPrefix: "Terakhir Sinkron: Real-time (Aktif)",
+            timeSettingTitle: "Waktu & Kalender Sistem (Real-Time World Clock)",
+            timeLabel: "Waktu Saat Ini (Jam:Menit:Detik)",
+            dayLabel: "Hari",
+            dateLabel: "Tanggal & Bulan",
+            yearLabel: "Tahun",
+            guestFormTitle: "Beri Izin Masuk Tamu / Orang Asing (Manual Authorization)",
+            guestFormSubtitle: "Daftarkan nama tamu untuk membuka kunci solenoid pintu secara otomatis selama 5 detik dan mencatat izin akses ke riwayat audit.",
+            guestPlaceholder: "Ketik nama lengkap tamu...",
+            grantOpenBtn: "Izinkan & Buka Pintu",
+            regUsersTitle: "Pengguna Terdaftar",
+            activePickle: "Aktif (Pickle)",
+            deleteBtn: "Hapus",
+            authGuestTitle: "Daftar Tamu Diizinkan",
+            notifHistoryTitle: "Log Riwayat Notifikasi & Peringatan Keamanan",
+            clearNotifBtn: "Hapus Riwayat Notifikasi",
+            notifHistorySub: "Daftar seluruh pesan peringatan, ancaman wajah asing, dan riwayat aktivitas kontrol sistem IoT.",
+            changeUserTitle: "Ubah Username Admin",
+            changeUserSub: "Ganti ID username yang digunakan untuk login administrator.",
+            newUserPlaceholder: "Username Baru",
+            currPassPlaceholder: "Konfirmasi Password Saat Ini",
+            saveUserBtn: "Simpan Username Baru",
+            changePass2FATitle: "Ganti Password (Verifikasi 2 Langkah)",
+            changePass2FASub: "Langkah 1: Masukkan password & kode OTP. Langkah 2: Konfirmasi ganti password baru.",
+            btnRequest2FA: "Kirim Kode Verifikasi OTP",
+            newPassPlaceholder: "Password Baru",
+            confirmNewPassPlaceholder: "Ulangi Password Baru",
+            btnFinalizePass: "Verifikasi & Terapkan Password",
+            langSettingTitle: "Pilihan Bahasa Antarmuka",
+            langSettingSubtitle: "Pilih bahasa tampilan untuk dashboard kontrol:",
+            langAuto: "Default",
+            langAutoSub: "Browser",
+            customTitleCard: "Kustomisasi Nama Portal",
+            customTitleSub: "Ubah judul portal dashboard yang tampil di bagian atas header.",
+            newTitlePlaceholder: "Masukkan judul baru...",
+            saveTitleBtn: "Terapkan & Simpan Judul",
+            themeSettingTitle: "Skema Warna & Tema Tampilan",
+            themeSettingSubtitle: "Pilih tema visual yang sesuai dengan preferensi Anda:",
+            themeWhite: "Putih",
+            themeBlack: "Hitam",
+            resSettingTitle: "Adaptasi Resolusi Layar & LCD",
+            resSettingSubtitle: "Status deteksi resolusi viewport perangkat (Smartphone, Tablet, PC Monitor, atau Layar TFT Raspberry Pi):",
+            currentViewportLabel: "Dimensi Viewport Saat Ini:",
+            layoutSyncLabel: "Status Sinkronisasi Layout:",
+            autoScaledActive: "Auto-Scaled Active",
+            toastWelcome: "Otentikasi Berhasil. Selamat Datang!",
+            toastLoginFail: "Kredensial Keamanan Salah!",
+            toastDoorOpen: "Solenoid Terbuka! Auto-relock aktif.",
+            toastDoorLocked: "Solenoid Terkunci Aman.",
+            toastAlarmReset: "Sirene Alarm Direset Normal.",
+            toastGuestEmpty: "Harap masukkan nama tamu!",
+            toastGuestGranted: "Izin diberikan untuk",
+            toastUserDeleted: "dihapus dari daftar model.",
+            toastGuestDeleted: "Data tamu dihapus.",
+            toastCsvSuccess: "File CSV Berhasil Diunduh!",
+            toastTitleUpdated: "Judul Dashboard Berhasil Diperbarui!",
+            toastTitleEmpty: "Ketik judul terlebih dahulu!",
+            toastThemeChanged: "Tema Diubah:",
+            toastLangChanged: "Bahasa Diubah:",
+            toastUserUpdated: "Username admin berhasil diperbarui!",
+            toastPassWrong: "Password saat ini tidak cocok!",
+            toastOtpSent: "Kode OTP Verifikasi Anda: ",
+            toastPassMismatch: "Konfirmasi password baru tidak cocok!",
+            toastPassUpdated: "Password baru berhasil diverifikasi & diperbarui!",
+            toastOtpWrong: "Kode OTP verifikasi salah!",
+            toastNotifCleared: "Seluruh riwayat notifikasi telah dihapus.",
+            chartFaceLabel: "Face ID Sukses",
+            chartDeniedLabel: "Akses Ditolak",
+            chartManualLabel: "Izin Manual (Tamu)"
+        },
+        en: {
+            loginTitle: "Smart Gate Access",
+            loginSubtitle: "IoT Security Portal Administrator Authentication",
+            adminIdLabel: "Admin ID",
+            securityKeyLabel: "Security Key",
+            userPlaceholder: "Enter Username",
+            passPlaceholder: "Enter Password",
+            loginError: "Invalid credentials!",
+            verifyButton: "Verify & Enter",
+            navMonitoring: "Monitoring & Telemetry",
+            navUsers: "Guest & User Permissions",
+            navNotifications: "Notification History",
+            navSettings: "System Settings",
+            logoutButton: "Logout Session",
+            mainHeaderTitle: "Smart Door Lock System Based on Face Recognition",
+            panel1Title: "Panel 1: Live Stream Webcam",
+            cameraPlaceholderText: "LIVE STREAM WEBCAM AREA",
+            verifiedIdentityLabel: "Verified Identity",
+            authStatusLabel: "Authorization Status",
+            accessGranted: "ACCESS GRANTED",
+            confidenceLabel: "Confidence (Face Match)",
+            timestampLabel: "Timestamp Log",
+            panel2Title: "Panel 2: Actuator & Lock Control",
+            physicalStatusLabel: "Physical Status",
+            lockedStatus: "LOCKED",
+            unlockedStatus: "UNLOCKED",
+            alarmSirenLabel: "Alarm Siren",
+            alarmNormal: "NORMAL",
+            autoRelockTitle: "Auto-Relock Countdown",
+            standbyLocked: "STANDBY (LOCKED)",
+            autoLockIn: "AUTO-LOCK IN",
+            unlockDoorBtn: "Unlock Door (5s Timer)",
+            instantLockBtn: "Instant Lock (Force Lock)",
+            resetAlarmBtn: "Reset Buzzer Alarm",
+            chartTitle: "Today's Access Frequency Chart (24 Hours)",
+            liveStreamTag: "24-Hour Timeline Stream",
+            panel3Title: "Panel 3: Activity & Audit Logs",
+            searchPlaceholder: "Search names...",
+            downloadCsvBtn: "Download CSV",
+            thNo: "No",
+            thTimestamp: "Timestamp",
+            thSubject: "Subject Name",
+            thStatus: "Access Status",
+            thConfidence: "Confidence",
+            thNotes: "Security Details",
+            thUser: "User Name",
+            thVector: "Model Status",
+            thAction: "Action",
+            thGuest: "Guest Name",
+            thAuthTime: "Auth Timestamp",
+            statFaceSuccess: "Face ID Success Total",
+            statDenied: "Illegal Access Denied",
+            statManual: "Manual Access Granted",
+            unitPeople: "People",
+            unitTimes: "Times",
+            badgeGranted: "GRANTED",
+            badgeDenied: "DENIED",
+            badgeGuestAccess: "GUEST ACCESS",
+            badgeManualOpen: "MANUAL OPEN",
+            logRegistered: "Registered Face in Model",
+            logUnknown: "Unknown / Illegal Face",
+            logGuestNote: "Guest Auth 5s",
+            logManualNote: "Manual Open 5s",
+            iotNetworkLabel: "IoT Network Status:",
+            syncPrefix: "Last Sync: Real-time (Active)",
+            timeSettingTitle: "System Time & Calendar (Real-Time World Clock)",
+            timeLabel: "Current Time (Hours:Minutes:Seconds)",
+            dayLabel: "Day",
+            dateLabel: "Date & Month",
+            yearLabel: "Year",
+            guestFormTitle: "Grant Guest / Stranger Entry (Manual Authorization)",
+            guestFormSubtitle: "Register guest name to trigger automatic 5s door unlock and log authorization to audit trail.",
+            guestPlaceholder: "Type full guest name...",
+            grantOpenBtn: "Authorize & Open Door",
+            regUsersTitle: "Registered Users",
+            activePickle: "Active (Pickle)",
+            deleteBtn: "Delete",
+            authGuestTitle: "Authorized Guest List",
+            notifHistoryTitle: "Security Notification & Alert Logs",
+            clearNotifBtn: "Clear Notification Logs",
+            notifHistorySub: "Archive of all warning messages, unknown face attempts, and IoT security events.",
+            changeUserTitle: "Change Admin Username",
+            changeUserSub: "Update administrator login ID.",
+            newUserPlaceholder: "New Username",
+            currPassPlaceholder: "Current Password",
+            saveUserBtn: "Save New Username",
+            changePass2FATitle: "Change Password (2-Factor Verification)",
+            changePass2FASub: "Step 1: Verify current pass & receive OTP. Step 2: Set new password.",
+            btnRequest2FA: "Send OTP Verification Code",
+            newPassPlaceholder: "New Password",
+            confirmNewPassPlaceholder: "Repeat New Password",
+            btnFinalizePass: "Verify & Update Password",
+            langSettingTitle: "Interface Language Selection",
+            langSettingSubtitle: "Choose UI display language for control dashboard:",
+            langAuto: "Default",
+            langAutoSub: "Browser",
+            customTitleCard: "Portal Title Customization",
+            customTitleSub: "Change the dashboard portal title displayed in the header.",
+            newTitlePlaceholder: "Enter new title...",
+            saveTitleBtn: "Apply & Save Title",
+            themeSettingTitle: "Color Palette & Display Theme",
+            themeSettingSubtitle: "Select visual theme suited for your screen:",
+            themeWhite: "White",
+            themeBlack: "Black",
+            resSettingTitle: "Screen & LCD Resolution Adaptation",
+            resSettingSubtitle: "Viewport resolution status (Smartphone, Tablet, PC Monitor, or Raspberry Pi TFT Screen):",
+            currentViewportLabel: "Current Viewport Size:",
+            layoutSyncLabel: "Layout Sync Status:",
+            autoScaledActive: "Auto-Scaled Active",
+            toastWelcome: "Authentication Successful. Welcome!",
+            toastLoginFail: "Incorrect Security Credentials!",
+            toastDoorOpen: "Solenoid Unlocked! Auto-relock active.",
+            toastDoorLocked: "Solenoid Locked Safely.",
+            toastAlarmReset: "Alarm Siren Reset to Normal.",
+            toastGuestEmpty: "Please enter guest name!",
+            toastGuestGranted: "Access granted for",
+            toastUserDeleted: "removed from model list.",
+            toastGuestDeleted: "Guest log deleted.",
+            toastCsvSuccess: "CSV File Downloaded Successfully!",
+            toastTitleUpdated: "Dashboard Title Updated Successfully!",
+            toastTitleEmpty: "Please type a title first!",
+            toastThemeChanged: "Theme Changed:",
+            toastLangChanged: "Language Changed:",
+            toastUserUpdated: "Admin username updated successfully!",
+            toastPassWrong: "Current password does not match!",
+            toastOtpSent: "Your Security OTP: ",
+            toastPassMismatch: "New passwords do not match!",
+            toastPassUpdated: "Password verified & updated successfully!",
+            toastOtpWrong: "Invalid OTP verification code!",
+            toastNotifCleared: "All notification logs have been cleared.",
+            chartFaceLabel: "Face ID Success",
+            chartDeniedLabel: "Denied Access",
+            chartManualLabel: "Manual Guest (Access)"
+        }
+    };
+
+    function getBrowserLanguage() {
+        const browserLang = navigator.language || navigator.userLanguage;
+        if (browserLang && browserLang.toLowerCase().startsWith('en')) {
+            return 'en';
+        }
+        return 'id';
+    }
+
+    function applyLanguageTranslations(lang) {
+        currentLang = (lang === 'auto') ? getBrowserLanguage() : lang;
+        const dict = i18n[currentLang] || i18n.id;
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dict[key]) {
+                el.innerText = dict[key];
+            }
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (dict[key]) {
+                el.setAttribute('placeholder', dict[key]);
+            }
+        });
+
+        document.querySelectorAll('[data-i18n-log]').forEach(el => {
+            const logType = el.getAttribute('data-i18n-log');
+            if (logType === 'registered') el.innerText = dict.logRegistered;
+            if (logType === 'unknown') el.innerText = dict.logUnknown;
+            if (logType === 'guest') el.innerText = dict.logGuestNote;
+            if (logType === 'manual') el.innerText = dict.logManualNote;
+        });
+
+        const savedTitle = localStorage.getItem('portalTitle');
+        if (!savedTitle) {
+            document.getElementById('headerTitle').innerText = dict.mainHeaderTitle;
+        }
+
+        if (accessChartInstance) initChart();
+        updateRealtimeClock();
+    }
+
+    function setAppLanguage(langChoice) {
+        localStorage.setItem('portalLang', langChoice);
+        document.querySelectorAll('#tab-settings .theme-selector-grid:first-of-type .theme-card').forEach(c => c.classList.remove('active'));
+        const activeCard = document.getElementById(`langBtn-${langChoice}`);
+        if (activeCard) activeCard.classList.add('active');
+
+        applyLanguageTranslations(langChoice);
+        const dict = i18n[currentLang] || i18n.id;
+        showToast(`${dict.toastLangChanged} ${langChoice.toUpperCase()}`, "success");
+    }
+
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+
+        let icon = 'fa-circle-check';
+        if (type === 'danger') icon = 'fa-triangle-exclamation';
+        if (type === 'warning') icon = 'fa-bell';
+
+        toast.innerHTML = `
+            <i class="fa-solid ${icon}" style="font-size: 18px;"></i>
+            <span style="font-size: 13px; font-weight: 700;">${message}</span>
+        `;
+        container.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 350);
+        }, 3500);
+    }
+
+    function handleLogin(event) {
+        event.preventDefault();
+        const user = document.getElementById('loginUser').value.trim();
+        const pass = document.getElementById('loginPass').value.trim();
+        const errorMsg = document.getElementById('loginErrorMsg');
+        const dict = i18n[currentLang] || i18n.id;
+
+        if (user === adminCredentials.username && pass === adminCredentials.password) {
+            errorMsg.style.display = "none";
+            document.getElementById('loginScreen').style.display = "none";
+            document.getElementById('mainApp').style.display = "block";
+            sessionStorage.setItem('isLoggedIn', 'true');
+            initChart();
+            showToast(dict.toastWelcome, "success");
+        } else {
+            errorMsg.style.display = "block";
+            showToast(dict.toastLoginFail, "danger");
+        }
+    }
+
+    function handleLogout() {
+        const dict = i18n[currentLang] || i18n.id;
+        if (confirm(dict.logoutButton + "?")) {
+            sessionStorage.removeItem('isLoggedIn');
+            location.reload();
+        }
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebarMenu').classList.toggle('active');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    function switchTab(tabId, linkElement) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+
+        document.getElementById(tabId).classList.add('active');
+        linkElement.classList.add('active');
+        toggleSidebar();
+
+        if (tabId === 'tab-dashboard') {
+            setTimeout(initChart, 100);
+        }
+    }
+
+    function getCurrentTimeWIB() {
+        const now = new Date();
+        return now.toTimeString().split(' ')[0] + " WIB";
+    }
+
+    // ==================== REALTIME CLOCK & CALENDAR SISTEM ====================
+    function updateRealtimeClock() {
+        const now = new Date();
+        const timeString = now.toTimeString().split(' ')[0] + " WIB";
+        const dict = i18n[currentLang] || i18n.id;
+
+        const syncEl = document.getElementById('txtRealtimeStatus');
+        if (syncEl) {
+            syncEl.innerText = `${dict.syncPrefix} (${timeString})`;
+        }
+
+        const clockEl = document.getElementById('dispRealTimeClock');
+        const dayEl = document.getElementById('dispRealDay');
+        const dateEl = document.getElementById('dispRealDate');
+        const yearEl = document.getElementById('dispRealYear');
+
+        if (clockEl) clockEl.innerText = timeString;
+
+        const daysID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const daysEN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const monthsID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        const monthsEN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+        const dayName = (currentLang === 'en') ? daysEN[now.getDay()] : daysID[now.getDay()];
+        const monthName = (currentLang === 'en') ? monthsEN[now.getMonth()] : monthsID[now.getMonth()];
+        const dateNum = now.getDate();
+        const yearNum = now.getFullYear();
+
+        if (dayEl) dayEl.innerText = dayName;
+        if (dateEl) dateEl.innerText = `${dateNum} ${monthName}`;
+        if (yearEl) yearEl.innerText = yearNum;
+    }
+
+    function bukaPintuTimed(seconds = 5) {
+        clearInterval(relockInterval);
+        const ledDoor = document.getElementById('ledDoor');
+        const txtDoor = document.getElementById('txtDoorStatus');
+        const progress = document.getElementById('progressRelock');
+        const txtTimer = document.getElementById('txtRelockTimer');
+        const dict = i18n[currentLang] || i18n.id;
+
+        ledDoor.className = "led-indicator led-green";
+        txtDoor.innerText = dict.unlockedStatus;
+        txtDoor.style.color = "var(--success)";
+
+        let remaining = seconds;
+        progress.style.width = '100%';
+        txtTimer.innerText = `${dict.autoLockIn} ${remaining}s`;
+
+        countManual++;
+        document.getElementById('statTotalManualNum').innerText = countManual;
+        tambahBarisLog(getCurrentTimeWIB(), "Manual Web Override", '<span class="badge badge-warning" data-i18n="badgeManualOpen">MANUAL OPEN</span>', "-", "manual");
+        tambahNotifikasiRiwayat("Override Manual Web", "Solenoid dibuka oleh admin dari dashboard.", "warning");
+
+        showToast(dict.toastDoorOpen, "warning");
+
+        const step = 100 / (seconds * 10);
+        let currentWidth = 100;
+
+        relockInterval = setInterval(() => {
+            currentWidth -= step;
+            progress.style.width = Math.max(0, currentWidth) + '%';
+
+            if (currentWidth % (step * 10) === 0) {
+                remaining--;
+                if (remaining >= 0) txtTimer.innerText = `${dict.autoLockIn} ${remaining}s`;
+            }
+
+            if (currentWidth <= 0) {
+                clearInterval(relockInterval);
+                kunciPintuInstan();
+            }
+        }, 100);
+    }
+
+    function kunciPintuInstan() {
+        clearInterval(relockInterval);
+        const txtDoor = document.getElementById('txtDoorStatus');
+        const dict = i18n[currentLang] || i18n.id;
+        document.getElementById('ledDoor').className = "led-indicator led-red";
+        txtDoor.innerText = dict.lockedStatus;
+        txtDoor.style.color = "var(--danger)";
+        document.getElementById('progressRelock').style.width = '0%';
+        document.getElementById('txtRelockTimer').innerText = dict.standbyLocked;
+        
+        tambahNotifikasiRiwayat("Kunci Instan (Force Lock)", "Solenoid pintu dikunci paksa secara manual oleh administrator.", "info");
+
+        showToast(dict.toastDoorLocked, "success");
+    }
+
+    function kontrolAlarm(aksi) {
+        const dict = i18n[currentLang] || i18n.id;
+        document.getElementById('ledAlarm').className = "led-indicator led-off";
+        document.getElementById('txtAlarmStatus').innerText = dict.alarmNormal;
+        
+        tambahNotifikasiRiwayat("Reset Alarm Buzzer", "Sirene peringatan alarm dinormalkan/direset oleh administrator.", "success");
+
+        showToast(dict.toastAlarmReset, "success");
+    }
+
+    // ==================== FUNGSI URUTKAN PENOMORAN SEMUA TABEL ====================
+    function renumberAllTables() {
+        // 1. Urutkan Nomor Tabel Log Aktivitas (1, 2, 3, ...)
+        const logTbody = document.getElementById('logBody');
+        if (logTbody) {
+            const logRows = logTbody.getElementsByTagName('tr');
+            for (let i = 0; i < logRows.length; i++) {
+                if (logRows[i].cells && logRows[i].cells.length > 0) {
+                    logRows[i].cells[0].innerText = (i + 1);
+                }
+            }
+        }
+
+        // 2. Urutkan Nomor Tabel Pengguna Terdaftar (1, 2, 3, ...)
+        const userTbody = document.getElementById('userRegisteredBody');
+        if (userTbody) {
+            const userRows = userTbody.getElementsByTagName('tr');
+            for (let i = 0; i < userRows.length; i++) {
+                if (userRows[i].cells && userRows[i].cells.length > 0) {
+                    userRows[i].cells[0].innerHTML = `<strong>${i + 1}</strong>`;
+                }
+            }
+        }
+
+        // 3. Urutkan Nomor Tabel Tamu Diizinkan (1, 2, 3, ...)
+        const guestTbody = document.getElementById('guestAuthorizedBody');
+        if (guestTbody) {
+            const guestRows = guestTbody.getElementsByTagName('tr');
+            for (let i = 0; i < guestRows.length; i++) {
+                if (guestRows[i].cells && guestRows[i].cells.length > 0) {
+                    guestRows[i].cells[0].innerHTML = `<strong>${i + 1}</strong>`;
+                }
+            }
+        }
+    }
+
+    // ==================== TAMBAH DATA TAMU (MASUK DI PALING BAWAH / BOTTOM INSERT) ====================
+    function beriIzinTamu() {
+        const inputNama = document.getElementById('inputNamaTamu');
+        const namaTamu = inputNama.value.trim();
+        const dict = i18n[currentLang] || i18n.id;
+
+        if (!namaTamu) {
+            showToast(dict.toastGuestEmpty, "danger");
+            return;
+        }
+
+        const waktuSekarang = getCurrentTimeWIB();
+        bukaPintuTimed(5);
+
+        const guestBody = document.getElementById('guestAuthorizedBody');
+        // Masuk di baris paling bawah (-1)
+        const newRowGuest = guestBody.insertRow(-1);
+        const nomorBaru = guestBody.rows.length;
+
+        newRowGuest.innerHTML = `
+            <td><strong>${nomorBaru}</strong></td>
+            <td class="user-name-cell">${namaTamu}</td>
+            <td class="mono" style="font-size: 14px;">${waktuSekarang}</td>
+            <td style="text-align: right;"><button class="btn-large-del" onclick="hapusTamu(this, '${namaTamu}')"><i class="fa-solid fa-trash"></i> <span>${dict.deleteBtn}</span></button></td>
+        `;
+
+        // Otomatis scroll ke posisi baris paling bawah tabel tamu
+        const container = document.getElementById('guestTableContainer');
+        if (container) container.scrollTop = container.scrollHeight;
+
+        tambahBarisLog(waktuSekarang, namaTamu, '<span class="badge badge-warning" data-i18n="badgeGuestAccess">GUEST ACCESS</span>', "-", "guest");
+        tambahNotifikasiRiwayat("Izin Tamu Diberikan", `Otorisasi manual untuk ${namaTamu}.`, "warning");
+
+        showToast(`${dict.toastGuestGranted} "${namaTamu}"!`, "success");
+        inputNama.value = "";
+    }
+
+    // ==================== SINKRONISASI 24 JAM REALTIME KE GRAFIK & STATISTIK ====================
+    function sinkronkanChartDariTabelLog() {
+        const chartLabels = [
+            '00:00', '02:00', '04:00', '06:00', '08:00', '10:00', 
+            '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'
+        ];
+
+        const faceData = new Array(chartLabels.length).fill(0);
+        const deniedData = new Array(chartLabels.length).fill(0);
+        const manualData = new Array(chartLabels.length).fill(0);
+
+        let totalFace = 0;
+        let totalDenied = 0;
+        let totalManual = 0;
+
+        const rows = document.querySelectorAll('#logBody tr');
+        rows.forEach(row => {
+            const timeCell = row.querySelector('td:nth-child(2)');
+            const statusCell = row.querySelector('td:nth-child(4)');
+
+            if (!timeCell || !statusCell) return;
+
+            const timeStr = timeCell.innerText.trim();
+            const statusStr = statusCell.innerText.toUpperCase();
+
+            const rawHour = parseInt(timeStr.split(':')[0], 10);
+            const slotHour = Math.floor(rawHour / 2) * 2;
+            const formattedSlot = slotHour.toString().padStart(2, '0') + ':00';
+            const index = chartLabels.indexOf(formattedSlot);
+
+            if (statusStr.includes('GRANTED')) {
+                totalFace++;
+                if (index !== -1) faceData[index]++;
+            } else if (statusStr.includes('DENIED')) {
+                totalDenied++;
+                if (index !== -1) deniedData[index]++;
+            } else if (statusStr.includes('MANUAL') || statusStr.includes('GUEST')) {
+                totalManual++;
+                if (index !== -1) manualData[index]++;
+            }
+        });
+
+        if (accessChartInstance) {
+            accessChartInstance.data.datasets[0].data = faceData;
+            accessChartInstance.data.datasets[1].data = deniedData;
+            accessChartInstance.data.datasets[2].data = manualData;
+            accessChartInstance.update('none');
+        }
+
+        const elFace = document.getElementById('statTotalFaceIDNum');
+        const elDenied = document.getElementById('statTotalDitolakNum');
+        const elManual = document.getElementById('statTotalManualNum');
+
+        if (elFace) elFace.innerText = totalFace;
+        if (elDenied) elDenied.innerText = totalDenied;
+        if (elManual) elManual.innerText = totalManual;
+    }
+
+    // ==================== TAMBAH LOG AKTIVITAS (MASUK DI PALING BAWAH / BOTTOM INSERT) ====================
+    function tambahBarisLog(waktu, nama, badgeStatus, confidence, logKey) {
+        const logBody = document.getElementById('logBody');
+        // Masuk di baris paling bawah (-1)
+        const newRowLog = logBody.insertRow(-1);
+        const nomorBaru = logBody.rows.length;
+        const dict = i18n[currentLang] || i18n.id;
+
+        let noteText = dict.logRegistered;
+        if (logKey === 'unknown') noteText = dict.logUnknown;
+        if (logKey === 'guest') noteText = dict.logGuestNote;
+        if (logKey === 'manual') noteText = dict.logManualNote;
+
+        newRowLog.innerHTML = `
+            <td>${nomorBaru}</td>
+            <td class="mono">${waktu}</td>
+            <td><strong>${nama}</strong></td>
+            <td>${badgeStatus}</td>
+            <td class="mono">${confidence}</td>
+            <td data-i18n-log="${logKey}">${noteText}</td>
+        `;
+
+        // Otomatis scroll ke posisi baris paling bawah tabel log
+        const container = document.getElementById('logTableContainer');
+        if (container) container.scrollTop = container.scrollHeight;
+
+        sinkronkanChartDariTabelLog();
+    }
+
+    function filterLogTable() {
+        const term = document.getElementById('inputSearchLog').value.toLowerCase();
+        const rows = document.querySelectorAll('#logBody tr');
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(term) ? '' : 'none';
+        });
+    }
+
+    function hapusPengguna(btn, nama) {
+        const dict = i18n[currentLang] || i18n.id;
+        if (confirm(`Hapus ${nama}?`)) {
+            btn.closest('tr').remove();
+            renumberAllTables();
+            showToast(`${nama} ${dict.toastUserDeleted}`, "danger");
+            tambahNotifikasiRiwayat("Penghapusan Model Wajah", `${nama} telah dihapus dari daftar model.`, "info");
+        }
+    }
+
+    function hapusTamu(btn, nama) {
+        const dict = i18n[currentLang] || i18n.id;
+        if (confirm(`Hapus izin tamu ${nama}?`)) {
+            btn.closest('tr').remove();
+            renumberAllTables();
+            showToast(dict.toastGuestDeleted, "danger");
+            tambahNotifikasiRiwayat("Hapus Izin Tamu", `Otorisasi tamu atas nama ${nama} telah dihapus.`, "info");
+        }
+    }
+
+    function tambahNotifikasiRiwayat(judul, pesan, jenis = 'info') {
+        const wrap = document.getElementById('notifListWrap');
+        const item = document.createElement('div');
+        item.className = `notif-item notif-${jenis}`;
+
+        let iconClass = 'fa-shield-halved';
+        if (jenis === 'danger') iconClass = 'fa-triangle-exclamation';
+        if (jenis === 'success') iconClass = 'fa-circle-check';
+        if (jenis === 'warning') iconClass = 'fa-door-open';
+
+        item.innerHTML = `
+            <div class="notif-icon-circle"><i class="fa-solid ${iconClass}"></i></div>
+            <div class="notif-content">
+                <h5>${judul}</h5>
+                <p>${pesan}</p>
+                <span class="notif-time mono">${getCurrentTimeWIB()} • System Event</span>
+            </div>
+        `;
+        wrap.insertBefore(item, wrap.firstChild);
+    }
+
+    function clearNotifHistory() {
+        const dict = i18n[currentLang] || i18n.id;
+        document.getElementById('notifListWrap').innerHTML = `
+            <div style="text-align: center; color: var(--text-muted); padding: 30px; font-size: 13px;">
+                <i class="fa-solid fa-bell-slash" style="font-size: 32px; margin-bottom: 8px; opacity: 0.5;"></i>
+                <p>Belum ada riwayat notifikasi baru.</p>
+            </div>
+        `;
+        showToast(dict.toastNotifCleared, "success");
+    }
+
+    function handleUpdateUsername(event) {
+        event.preventDefault();
+        const dict = i18n[currentLang] || i18n.id;
+        const newU = document.getElementById('inputNewUsername').value.trim();
+        const confirmP = document.getElementById('inputConfirmPassForUser').value.trim();
+
+        if (confirmP !== adminCredentials.password) {
+            showToast(dict.toastPassWrong, "danger");
+            return;
+        }
+
+        adminCredentials.username = newU;
+        localStorage.setItem('portalAdminUser', newU);
+        document.getElementById('inputNewUsername').value = "";
+        document.getElementById('inputConfirmPassForUser').value = "";
+        showToast(dict.toastUserUpdated, "success");
+        tambahNotifikasiRiwayat("Keamanan Admin", `Username administrator diganti menjadi "${newU}".`, "info");
+    }
+
+    function request2FACode() {
+        const dict = i18n[currentLang] || i18n.id;
+        const currP = document.getElementById('inputCurrentPass2FA').value.trim();
+
+        if (currP !== adminCredentials.password) {
+            showToast(dict.toastPassWrong, "danger");
+            return;
+        }
+
+        generated2FACode = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        document.getElementById('section2FAStep1').style.display = "none";
+        document.getElementById('section2FAStep2').style.display = "flex";
+        document.getElementById('boxOtpAlert').innerHTML = `<i class="fa-solid fa-envelope-open-text"></i> ${dict.toastOtpSent} <strong>${generated2FACode}</strong>`;
+
+        showToast(`${dict.toastOtpSent} ${generated2FACode}`, "warning");
+        tambahNotifikasiRiwayat("2-Factor Verification", `Kode OTP dibuat (${generated2FACode}) untuk perubahan password.`, "warning");
+    }
+
+    function handleFinal2FAPasswordChange(event) {
+        event.preventDefault();
+        const dict = i18n[currentLang] || i18n.id;
+        const otpInput = document.getElementById('input2FACode').value.trim();
+        const newP = document.getElementById('inputNewPasswordFinal').value.trim();
+        const confirmNewP = document.getElementById('inputConfirmNewPasswordFinal').value.trim();
+
+        if (otpInput !== generated2FACode) {
+            showToast(dict.toastOtpWrong, "danger");
+            return;
+        }
+
+        if (newP !== confirmNewP) {
+            showToast(dict.toastPassMismatch, "danger");
+            return;
+        }
+
+        adminCredentials.password = newP;
+        localStorage.setItem('portalAdminPass', newP);
+
+        generated2FACode = null;
+        document.getElementById('inputCurrentPass2FA').value = "";
+        document.getElementById('input2FACode').value = "";
+        document.getElementById('inputNewPasswordFinal').value = "";
+        document.getElementById('inputConfirmNewPasswordFinal').value = "";
+        document.getElementById('section2FAStep2').style.display = "none";
+        document.getElementById('section2FAStep1').style.display = "flex";
+
+        showToast(dict.toastPassUpdated, "success");
+        tambahNotifikasiRiwayat("Password Diperbarui", "Password administrator berhasil diubah menggunakan verifikasi 2 langkah.", "success");
+    }
+
+    // ==================== INISIALISASI CHART 24 JAM ====================
+    function initChart() {
+        const ctx = document.getElementById('accessChart').getContext('2d');
+        const dict = i18n[currentLang] || i18n.id;
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'default';
+        if (accessChartInstance) accessChartInstance.destroy();
+
+        let gridColor = 'rgba(255, 255, 255, 0.05)';
+        let textColor = '#8e9db5';
+
+        if (currentTheme === 'light') {
+            gridColor = 'rgba(15, 23, 42, 0.08)';
+            textColor = '#475569';
+        }
+
+        let gradCyan = ctx.createLinearGradient(0, 0, 0, 200);
+        gradCyan.addColorStop(0, currentTheme === 'light' ? 'rgba(2, 132, 199, 0.25)' : 'rgba(6, 182, 212, 0.35)');
+        gradCyan.addColorStop(1, currentTheme === 'light' ? 'rgba(2, 132, 199, 0.0)' : 'rgba(6, 182, 212, 0.0)');
+
+        const timeline24h = [
+            '00:00', '02:00', '04:00', '06:00', '08:00', '10:00', 
+            '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'
+        ];
+
+        accessChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: timeline24h,
+                datasets: [
+                    {
+                        label: dict.chartFaceLabel,
+                        data: new Array(12).fill(0),
+                        borderColor: currentTheme === 'light' ? '#0284c7' : '#06b6d4',
+                        backgroundColor: gradCyan,
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointBackgroundColor: currentTheme === 'light' ? '#0284c7' : '#06b6d4'
+                    },
+                    {
+                        label: dict.chartDeniedLabel,
+                        data: new Array(12).fill(0),
+                        borderColor: currentTheme === 'light' ? '#e11d48' : '#f43f5e',
+                        borderDash: [4, 4],
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 3,
+                        pointBackgroundColor: currentTheme === 'light' ? '#e11d48' : '#f43f5e'
+                    },
+                    {
+                        label: dict.chartManualLabel,
+                        data: new Array(12).fill(0),
+                        borderColor: currentTheme === 'light' ? '#d97706' : '#f59e0b',
+                        borderWidth: 2.5,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        pointBackgroundColor: currentTheme === 'light' ? '#d97706' : '#f59e0b'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: textColor,
+                            font: { family: 'Plus Jakarta Sans', size: 13, weight: 600 },
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            boxWidth: 7,
+                            boxHeight: 7,
+                            padding: 24
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        grid: { color: gridColor }, 
+                        ticks: { color: textColor, font: { size: 12 } } 
+                    },
+                    y: { 
+                        grid: { color: gridColor }, 
+                        ticks: { 
+                            color: textColor, 
+                            stepSize: 2, 
+                            font: { size: 12 } 
+                        },
+                        beginAtZero: true,
+                        min: 0,
+                        suggestedMax: 10
+                    }
+                }
+            }
+        });
+
+        sinkronkanChartDariTabelLog();
+    }
+
+    function downloadCSV() {
+        const dict = i18n[currentLang] || i18n.id;
+        let table = document.getElementById("logTable");
+        let rows = table.querySelectorAll("tr");
+        let csv = [];
+
+        for (let i = 0; i < rows.length; i++) {
+            let row = [], cols = rows[i].querySelectorAll("td, th");
+            for (let j = 0; j < cols.length; j++) {
+                let text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").trim();
+                row.push('"' + text + '"');
+            }
+            csv.push(row.join(","));
+        }
+
+        let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
+        let link = document.createElement("a");
+        link.download = "SmartDoor_AuditLog_" + new Date().toISOString().slice(0,10) + ".csv";
+        link.href = window.URL.createObjectURL(csvFile);
+        link.click();
+        showToast(dict.toastCsvSuccess, "success");
+    }
+
+    function simpanNamaDashboard() {
+        const newTitle = document.getElementById('inputCustomTitle').value.trim();
+        const dict = i18n[currentLang] || i18n.id;
+        if (newTitle) {
+            document.getElementById('headerTitle').innerText = newTitle;
+            document.title = newTitle;
+            localStorage.setItem('portalTitle', newTitle);
+            showToast(dict.toastTitleUpdated, "success");
+        } else {
+            showToast(dict.toastTitleEmpty, "warning");
+        }
+    }
+
+    function setAppTheme(themeName) {
+        const dict = i18n[currentLang] || i18n.id;
+        document.documentElement.setAttribute('data-theme', themeName);
+        localStorage.setItem('portalTheme', themeName);
+
+        document.querySelectorAll('#tab-settings .theme-selector-grid:nth-of-type(2) .theme-card').forEach(card => card.classList.remove('active'));
+        const activeCard = document.getElementById(`themeBtn-${themeName}`);
+        if (activeCard) activeCard.classList.add('active');
+
+        showToast(`${dict.toastThemeChanged} ${themeName.toUpperCase()}`, "success");
+        if (accessChartInstance) initChart();
+    }
+
+    function updateViewportInfo() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const disp = document.getElementById('dispViewportSize');
+        if (disp) disp.innerText = `${width} x ${height} px`;
+    }
+
+    window.addEventListener('load', function() {
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            document.getElementById('loginScreen').style.display = "none";
+            document.getElementById('mainApp').style.display = "block";
+            initChart();
+        }
+
+        const savedLang = localStorage.getItem('portalLang') || 'auto';
+        document.querySelectorAll('#tab-settings .theme-selector-grid:first-of-type .theme-card').forEach(c => c.classList.remove('active'));
+        const activeLangBtn = document.getElementById(`langBtn-${savedLang}`);
+        if (activeLangBtn) activeLangBtn.classList.add('active');
+        applyLanguageTranslations(savedLang);
+
+        const savedTitle = localStorage.getItem('portalTitle');
+        if (savedTitle) {
+            document.getElementById('headerTitle').innerText = savedTitle;
+            document.getElementById('inputCustomTitle').value = savedTitle;
+            document.title = savedTitle;
+        }
+
+        const savedTheme = localStorage.getItem('portalTheme') || 'default';
+        setAppTheme(savedTheme);
+
+        updateViewportInfo();
+
+        // Urutkan penomoran seluruh tabel dari nomor 1 secara sekuensial
+        renumberAllTables();
+
+        // Jalankan Real-Time World Clock setiap detik
+        updateRealtimeClock();
+        setInterval(updateRealtimeClock, 1000);
+    });
+
+    window.addEventListener('resize', updateViewportInfo);
+</script>
+
+</body>
+</html>
